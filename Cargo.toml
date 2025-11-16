@@ -1,0 +1,15 @@
+[package]
+name = "minework"
+description = "Minework helps you manage your Minecraft mods, mod packs, resource packs, data packs, shaders and plugins from Modrinth"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5.51", features = ["derive"] }
+color-eyre = "0.6.5"
+console = "0.16.1"
+eyre = "0.6.12"
+inquire = "0.9.1"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+shellexpand = "3.1.1"
