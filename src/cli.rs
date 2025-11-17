@@ -1,3 +1,6 @@
+pub(crate) mod completion;
+pub(crate) mod profile;
+
 use clap::{Parser, Subcommand};
 
 /// Minework helps you manage your Minecraft mods, mod packs, resource packs, data packs, shaders and plugins from Modrinth
@@ -35,6 +38,9 @@ pub(crate) enum SubCommands {
   /// Manage plugins in the active profile
   #[command(subcommand, visible_alias = "pl")]
   Plugin(PluginCommands),
+  /// Generate completions for your shell
+  #[command(subcommand, visible_aliases = &["cp", "comp"])]
+  Completion(Shells),
 }
 
 #[derive(Subcommand)]
@@ -76,3 +82,19 @@ pub(crate) enum ShaderCommands {}
 
 #[derive(Subcommand)]
 pub(crate) enum PluginCommands {}
+
+#[derive(Subcommand)]
+pub(crate) enum Shells {
+  /// Generate completions for Bash
+  Bash,
+  /// Generate completions for ZSH
+  Zsh,
+  /// Generate completions for Fish
+  Fish,
+  /// Generate completions for Elvish
+  Elvish,
+  /// Generate completions for PowerShell
+  Powershell,
+  /// Generate completions for Nushell
+  Nushell,
+}
