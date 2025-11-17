@@ -1,7 +1,6 @@
 use console::style;
 use eyre::{Context, Result};
 use serde::{Deserialize, Serialize};
-use shellexpand::tilde;
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
@@ -44,7 +43,8 @@ pub(crate) struct ModOptions {
 }
 
 pub(crate) fn init(config_file: &str) -> Result<Config> {
-  let expanded = tilde(config_file);
+  let expanded =
+    shellexpand::full(config_file).context(format!("Failed to expand \"{config_file}\""))?;
   let path = PathBuf::from(expanded.into_owned());
   println!(
     "   {} to use configuration from {:?}",

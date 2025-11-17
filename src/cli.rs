@@ -7,7 +7,7 @@ pub(crate) struct Args {
   #[command(subcommand)]
   pub(crate) subcommands: SubCommands,
   /// Specify the file path to read the configuration from
-  #[arg(short, long, default_value = "~/.config/minework/config.json")]
+  #[arg(short, long, default_value = "$XDG_CONFIG_HOME/minework/config.json")]
   pub(crate) config_file: String,
 }
 
