@@ -9,7 +9,7 @@ clap = { version = "4.5.51", features = ["derive"] }
 clap_complete = "4.5.60"
 clap_complete_nushell = "4.5.10"
 color-eyre = { version = "0.6.5", default-features = false }
-console = "0.16.1"
+crossterm = "0.29.0"
 ferinth = "2.12.0"
 inquire = "0.9.1"
 serde = { version = "1.0.228", features = ["derive"] }

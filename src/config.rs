@@ -1,8 +1,10 @@
 use color_eyre::eyre;
 use color_eyre::eyre::{Context, Result};
-use console::style;
+use crossterm::ExecutableCommand;
+use crossterm::style::{Color, Print, ResetColor, SetForegroundColor};
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
@@ -79,11 +81,15 @@ fn read_config(config_file: &Path) -> Result<Config> {
   let config = serde_json::from_str(&content)
     .context("Malformed config. Does it conform to the required JSON schema?")?;
 
-  println!(
-    "{} config from {:?}",
-    style("Using").green().bold(),
-    style(&config_file).cyan()
-  );
+  io::stdout()
+    .execute(SetForegroundColor(Color::Green))?
+    .execute(Print("Using"))?
+    .execute(ResetColor)?
+    .execute(Print(" config from "))?
+    .execute(SetForegroundColor(Color::Cyan))?
+    .execute(Print(format!("{:?}", &config_file)))?
+    .execute(ResetColor)?
+    .execute(Print("\n"))?;
 
   Ok(config)
 }
@@ -106,11 +112,15 @@ fn write_config(config: &Config, config_file: &Path) -> Result<()> {
     .write_all(json.as_bytes())
     .context(format!("Failed to write default config to {config_file:?}"))?;
 
-  println!(
-    "{} default config to {:?}",
-    style("Wrote").green().bold(),
-    style(&config_file).cyan()
-  );
+  io::stdout()
+    .execute(SetForegroundColor(Color::Green))?
+    .execute(Print("Wrote"))?
+    .execute(ResetColor)?
+    .execute(Print(" default config to "))?
+    .execute(SetForegroundColor(Color::Cyan))?
+    .execute(Print(format!("{:?}", &config_file)))?
+    .execute(ResetColor)?
+    .execute(Print("\n"))?;
 
   Ok(())
 }
