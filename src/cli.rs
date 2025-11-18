@@ -18,10 +18,10 @@ pub(crate) struct Args {
 #[derive(Subcommand)]
 pub(crate) enum SubCommands {
   /// Manage profiles
-  #[command(subcommand, visible_aliases = &["p", "pr"])]
+  #[command(subcommand, visible_alias = "pr")]
   Profile(ProfileCommands),
   /// Manage mods in the active profile
-  #[command(subcommand, visible_aliases = &["m", "md"])]
+  #[command(subcommand, visible_alias = "m")]
   Mod(ModCommands),
   /// Manage modpacks in the active profile
   #[command(subcommand, visible_alias = "mp")]
@@ -33,35 +33,35 @@ pub(crate) enum SubCommands {
   #[command(subcommand, visible_alias = "dp")]
   Datapack(DatapackCommands),
   /// Manage shaders in the active profile
-  #[command(subcommand, visible_aliases = &["s", "sh"])]
+  #[command(subcommand, visible_alias = "s")]
   Shader(ShaderCommands),
   /// Manage plugins in the active profile
   #[command(subcommand, visible_alias = "pl")]
   Plugin(PluginCommands),
   /// Generate completions for your shell
-  #[command(subcommand, visible_aliases = &["cp", "comp"])]
+  #[command(subcommand)]
   Completion(Shells),
 }
 
 #[derive(Subcommand)]
 pub(crate) enum ProfileCommands {
   /// Create a new profile. Tries to enages a picker if no default name is provided
-  #[command(visible_aliases = &["c", "cr", "add", "a"])]
+  #[command(visible_aliases = &["c", "add", "a"])]
   Create { name: Option<String> },
   /// Edit an existing profile. Tries to default to active profile
-  #[command(visible_aliases = &["e", "ed"])]
+  #[command(visible_alias = "e")]
   Edit { name: Option<String> },
   /// List all existing profiles
-  #[command(visible_aliases = &["l", "ls"])]
+  #[command(visible_alias = "l")]
   List,
   /// Show information about an existing profile. Tries to default to active profile
   #[command(visible_alias = "i")]
   Info { name: Option<String> },
   /// Switch to another profile. Tries to enages a picker if no default name is provided
-  #[command(visible_aliases = &["s", "sw"])]
+  #[command(visible_alias = "s")]
   Switch { name: Option<String> },
   /// Delete an existing profile. Tries to enages a picker if no default name is provided
-  #[command(visible_aliases = &["d", "dl", "remove", "rm"])]
+  #[command(visible_aliases = &["d", "remove", "r"])]
   Delete { name: Option<String> },
 }
 
