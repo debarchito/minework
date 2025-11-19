@@ -2,6 +2,7 @@ pub(crate) mod completion;
 pub(crate) mod profile;
 
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
 
 /// Minework helps you manage your Minecraft mods, mod packs, resource packs, data packs, shaders and plugins from Modrinth
 #[derive(Parser)]
@@ -11,7 +12,19 @@ pub(crate) struct Args {
   pub(crate) subcommands: SubCommands,
   /// Specify the file path to read the configuration from
   #[arg(short, long, default_value = "$XDG_CONFIG_HOME/minework/config.json")]
-  pub(crate) config_file: String,
+  pub(crate) config_file: PathBuf,
+  /// Disable colors in output
+  #[arg(short = 'C', long)]
+  pub(crate) no_color: bool,
+  /// Disable the file location section in error output
+  #[arg(short = 'L', long)]
+  pub(crate) no_location_section: bool,
+  /// Disable the backtrace section in error output
+  #[arg(short = 'B', long)]
+  pub(crate) no_backtrace_section: bool,
+  /// Run in headless mode. Input is expected either through $MINEWORK_ENVIN environment variable or stdin with the former getting the higher priority
+  #[arg(short = 'H', long)]
+  pub(crate) headless: bool,
 }
 
 /// Manage profiles

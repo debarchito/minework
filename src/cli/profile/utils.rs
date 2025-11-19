@@ -11,7 +11,7 @@ use std::path::PathBuf;
 /// If a name was passed in, it is returned. If not, the user is prompted,
 /// and the input is validated to ensure the config does not already
 /// contain a profile with the same case-insensitive name.
-pub(crate) fn prompt_profile_name(name: Option<String>, config: &Config) -> Result<String> {
+pub(crate) fn prompt_profile_name(name: &Option<String>, config: &Config) -> Result<String> {
   if let Some(n) = name {
     if config
       .profile
@@ -21,7 +21,7 @@ pub(crate) fn prompt_profile_name(name: Option<String>, config: &Config) -> Resu
     {
       eyre::bail!("A profile with the name \"{n}\" already exists");
     }
-    return Ok(n);
+    return Ok(n.to_owned());
   }
 
   Text::new("What should this profile be called?")

@@ -1,3 +1,5 @@
+//! Implements all the completion subcommands
+
 use clap::CommandFactory;
 
 /// Generates shell completion scripts.
@@ -8,7 +10,7 @@ pub(crate) fn generate(shell: super::Shells) {
   use super::Shells;
   use clap_complete::generate;
   use clap_complete::shells::Shell::*;
-  use clap_complete_nushell::*;
+  use clap_complete_nushell::Nushell;
 
   let mut cmd = super::Args::command();
   let bin = cmd.get_name().to_string();
