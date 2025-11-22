@@ -21,10 +21,10 @@ pub(crate) async fn create(
     let mut inputs = NonInteractiveInput {
       fields: 4,
       descriptions: &[
-        "A unique profile name",
-        "The Minecraft version to target",
-        "Path to directory where Minecraft instance is installed",
-        "The mod loader to use (none, fabric)",
+        "A unique profile name.",
+        "The Minecraft version to target.",
+        "Path to directory where Minecraft instance is installed.",
+        "The mod loader to use (none, fabric).",
       ],
       examples: &[
         "MINEWORK_ENVIN=\"MineWorld <> 1.21.5 <> ~/.minecraft <> fabric\" minework --non-interactive profile create",
@@ -39,7 +39,11 @@ pub(crate) async fn create(
       .iter()
       .map(|p| p.name.as_str())
       .collect();
-    validate_against_enum(&profile_names, &name, Some(false))?;
+    validate_against_enum(
+      &profile_names,
+      &name,
+      /* inclusive (default behaviour) */ Some(false),
+    )?;
 
     let version = inputs.remove(0);
     let minecraft_versions = get_minecraft_versions().await?;
@@ -49,7 +53,11 @@ pub(crate) async fn create(
     validate_directory(&directory)?;
 
     let loader = inputs.remove(0).to_lowercase();
-    validate_against_enum(&SUPPORTED_MOD_LOADERS, &loader, None)?;
+    validate_against_enum(
+      &SUPPORTED_MOD_LOADERS,
+      &loader,
+      /* inclusive (default behaviour) */ None,
+    )?;
 
     (name, version, directory, loader)
   } else {

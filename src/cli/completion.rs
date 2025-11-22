@@ -6,8 +6,8 @@ use clap::CommandFactory;
 ///
 /// Writes the completion script for the specified shell to standard output.
 /// Supported shells include Bash, Zsh, Fish, Elvish, PowerShell, and Nushell.
-pub(crate) fn generate(shell: super::Shells) {
-  use super::Shells;
+pub(crate) fn generate(shell: super::Shell) {
+  use super::Shell;
   use clap_complete::generate;
   use clap_complete::shells::Shell::*;
   use clap_complete_nushell::Nushell;
@@ -17,11 +17,11 @@ pub(crate) fn generate(shell: super::Shells) {
   let mut stdout = std::io::stdout();
 
   match shell {
-    Shells::Bash => generate(Bash, &mut cmd, bin, &mut stdout),
-    Shells::Zsh => generate(Zsh, &mut cmd, bin, &mut stdout),
-    Shells::Fish => generate(Fish, &mut cmd, bin, &mut stdout),
-    Shells::Elvish => generate(Elvish, &mut cmd, bin, &mut stdout),
-    Shells::Powershell => generate(PowerShell, &mut cmd, bin, &mut stdout),
-    Shells::Nushell => generate(Nushell, &mut cmd, bin, &mut stdout),
+    Shell::Bash => generate(Bash, &mut cmd, bin, &mut stdout),
+    Shell::Zsh => generate(Zsh, &mut cmd, bin, &mut stdout),
+    Shell::Fish => generate(Fish, &mut cmd, bin, &mut stdout),
+    Shell::Elvish => generate(Elvish, &mut cmd, bin, &mut stdout),
+    Shell::Powershell => generate(PowerShell, &mut cmd, bin, &mut stdout),
+    Shell::Nushell => generate(Nushell, &mut cmd, bin, &mut stdout),
   }
 }

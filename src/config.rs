@@ -1,5 +1,5 @@
 use color_eyre::eyre;
-use color_eyre::eyre::{Context, Result};
+use color_eyre::eyre::{Result, WrapErr};
 use crossterm::ExecutableCommand;
 use crossterm::style::{Color, Print, ResetColor, SetForegroundColor};
 use serde::{Deserialize, Serialize};
@@ -77,9 +77,9 @@ pub(crate) fn init(config_file: &Path) -> Result<Config> {
 /// Reads a JSON config file from disk and deserializes it into a `Config`.
 fn read_config(config_file: &Path) -> Result<Config> {
   let content = fs::read_to_string(config_file)
-    .context(format!("Failed to read config from {config_file:?}"))?;
+    .wrap_err(format!("Failed to read config from {config_file:?}"))?;
   let config = serde_json::from_str(&content)
-    .context("Malformed config. Does it conform to the required JSON schema?")?;
+    .wrap_err("Malformed config. Does it conform to the required JSON schema?")?;
 
   io::stdout()
     .execute(SetForegroundColor(Color::Green))?
@@ -99,18 +99,18 @@ fn write_config(config: &Config, config_file: &Path) -> Result<()> {
   let parent = config_file
     .parent()
     .ok_or_else(|| eyre::eyre!("Cannot determine parent directory for {config_file:?}"))?;
-  fs::create_dir_all(parent).context(format!(
+  fs::create_dir_all(parent).wrap_err(format!(
     "Failed to create parent directory(ies) for {config_file:?}"
   ))?;
 
   let mut writer = fs::File::create(config_file)
-    .context(format!("Failed to create config file {config_file:?}"))?;
+    .wrap_err(format!("Failed to create config file {config_file:?}"))?;
   let json = serde_json::to_string_pretty(&config)
-    .context("Malformed default config. This is a bug, please report it")?;
+    .wrap_err("Malformed default config. This is a bug, please report it")?;
 
   writer
     .write_all(json.as_bytes())
-    .context(format!("Failed to write default config to {config_file:?}"))?;
+    .wrap_err(format!("Failed to write default config to {config_file:?}"))?;
 
   io::stdout()
     .execute(SetForegroundColor(Color::Green))?
