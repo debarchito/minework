@@ -47,9 +47,9 @@ pub(crate) fn extract_values(input: &str) -> Vec<String> {
 }
 
 /// Gets input either from the $MINEWORK_ENVIN environment variable or stdin, and returns it as a vector of strings
-pub(crate) fn get_headless_input(bail_message: &str) -> Result<Vec<String>> {
+pub(crate) fn get_non_interactive_input(bail_message: &str) -> Result<Vec<String>> {
   let bail_message = format!(
-    "Headless mode requires input either via $MINEWORK_ENVIN environment variable or stdin with the former getting higher priority.\n\n\
+    "Non-interactive mode requires input either via $MINEWORK_ENVIN environment variable or stdin with the former getting higher priority.\n\n\
     {bail_message}"
   );
 
@@ -88,8 +88,8 @@ pub(crate) async fn get_minecraft_versions() -> Result<Vec<String>> {
   )
 }
 
-/// Configuration for headless input parsing
-pub(crate) struct HeadlessInput<'a> {
+/// Configuration for non-interactive input parsing
+pub(crate) struct NonInteractiveInput<'a> {
   /// Number of expected input fields
   pub(crate) fields: usize,
   /// Description of each field for the help message
@@ -98,7 +98,7 @@ pub(crate) struct HeadlessInput<'a> {
   pub(crate) examples: &'a [&'a str],
 }
 
-impl<'a> HeadlessInput<'a> {
+impl<'a> NonInteractiveInput<'a> {
   /// Generate the complete bail message
   fn bail_message(&self) -> String {
     let field_list = self
@@ -125,7 +125,7 @@ impl<'a> HeadlessInput<'a> {
   /// Parse and validate input count
   pub(crate) fn parse(&self) -> Result<Vec<String>> {
     let bail_message = self.bail_message();
-    let mut lines = crate::utils::get_headless_input(&bail_message)?;
+    let mut lines = crate::utils::get_non_interactive_input(&bail_message)?;
 
     if lines.len() < self.fields {
       return Err(

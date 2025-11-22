@@ -22,9 +22,9 @@ pub(crate) struct Args {
   /// Disable the backtrace section in error output
   #[arg(short = 'B', long)]
   pub(crate) no_backtrace_section: bool,
-  /// Run in headless mode. Input is expected either through $MINEWORK_ENVIN environment variable or stdin with the former getting the higher priority
-  #[arg(short = 'H', long)]
-  pub(crate) headless: bool,
+  /// Run in non-interactive mode. Input is expected either through $MINEWORK_ENVIN environment variable or stdin with the former getting the higher priority
+  #[arg(short = 'I', long)]
+  pub(crate) non_interactive: bool,
 }
 
 /// Manage profiles

@@ -17,8 +17,8 @@ pub(crate) async fn create(
   mut config: Config,
   args: &crate::Args,
 ) -> Result<()> {
-  let (name, version, directory, loader) = if args.headless {
-    let mut inputs = HeadlessInput {
+  let (name, version, directory, loader) = if args.non_interactive {
+    let mut inputs = NonInteractiveInput {
       fields: 4,
       descriptions: &[
         "A unique profile name",
@@ -27,8 +27,8 @@ pub(crate) async fn create(
         "The mod loader to use (none, fabric)",
       ],
       examples: &[
-        "MINEWORK_ENVIN=\"MineWorld <> 1.21.5 <> ~/.minecraft <> fabric\" minework --headless profile create",
-        "echo \"MineWorld <> 1.21.5 <> $XDG_DATA_HOME/PrismLauncher/instances/MineWorld/minecraft <> Fabric\" | minework -H pr c",
+        "MINEWORK_ENVIN=\"MineWorld <> 1.21.5 <> ~/.minecraft <> fabric\" minework --non-interactive profile create",
+        "echo \"MineWorld <> 1.21.5 <> $XDG_DATA_HOME/PrismLauncher/instances/MineWorld/minecraft <> Fabric\" | minework -I pr c",
       ],
     }.parse()?;
 
