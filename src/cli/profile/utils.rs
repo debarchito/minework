@@ -17,7 +17,7 @@ pub fn prompt_profile_name(name: &Option<String>, config: &Config) -> Result<Str
       .profile
       .list
       .iter()
-      .any(|p| p.name.eq_ignore_ascii_case(&n))
+      .any(|p| p.name.eq_ignore_ascii_case(n))
     {
       eyre::bail!("A profile with the name \"{n}\" already exists");
     }

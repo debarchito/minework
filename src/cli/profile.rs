@@ -6,7 +6,7 @@ use crate::config::*;
 use crate::utils::*;
 use color_eyre::eyre::Result;
 
-const SUPPORTED_MOD_LOADERS: [&'static str; 2] = ["none", "fabric"];
+const SUPPORTED_MOD_LOADERS: [&str; 2] = ["none", "fabric"];
 
 /// Creates a new profile and saves it to the config file.
 ///

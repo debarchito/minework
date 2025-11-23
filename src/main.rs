@@ -13,18 +13,16 @@ async fn main() -> Result<()> {
   utils::setup_hook(&args)?;
 
   if let SubCommand::Completion(shell) = args.subcommand {
-    return Ok(completion::generate(shell));
+    completion::generate(shell);
+    return Ok(());
   }
 
   let config_file = utils::expand_path(&args.config_file)?;
   let config = config::init(&config_file)?;
   args.config_file = config_file;
 
-  match &args.subcommand {
-    SubCommand::Profile(ProfileCommand::Create { name }) => {
-      profile::create(name, config, &args).await?
-    }
-    _ => (),
+  if let SubCommand::Profile(ProfileCommand::Create { name }) = &args.subcommand {
+    profile::create(name, config, &args).await?
   }
 
   Ok(())
