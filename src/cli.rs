@@ -60,7 +60,7 @@ pub enum SubCommand {
 
 #[derive(Subcommand)]
 pub enum ProfileCommand {
-  /// Create a new profile. Tries to enages a picker if no default name is provided.
+  /// Create a new profile. Tries to enages a picker if no default name is provided in interactive mode.
   #[command(visible_aliases = &["c", "add", "a"])]
   Create { name: Option<String> },
   /// Edit an existing profile. Tries to default to active profile.
@@ -72,10 +72,10 @@ pub enum ProfileCommand {
   /// Show information about an existing profile. Tries to default to active profile.
   #[command(visible_alias = "i")]
   Info { name: Option<String> },
-  /// Switch to another profile. Tries to enages a picker if no default name is provided.
+  /// Switch to another profile. Tries to enages a picker if no default name is provided in interactive mode.
   #[command(visible_alias = "s")]
   Switch { name: Option<String> },
-  /// Delete an existing profile. Tries to enages a picker if no default name is provided.
+  /// Delete an existing profile. Tries to enages a picker if no default name is provided in interactive mode.
   #[command(visible_aliases = &["d", "remove", "r"])]
   Delete { name: Option<String> },
 }
