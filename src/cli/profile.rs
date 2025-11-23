@@ -43,11 +43,12 @@ pub(crate) async fn create(
       &profile_names,
       &name,
       /* inclusive (default behaviour) */ Some(false),
+      /* custom suggestion (auto-lists variants otherwise) */ None,
     )?;
 
     let version = inputs.remove(0);
     let minecraft_versions = get_minecraft_versions().await?;
-    validate_against_enum(&minecraft_versions, &version, None)?;
+    validate_against_minecraft_versions(&minecraft_versions, &version)?;
 
     let directory = expand_path(inputs.remove(0))?;
     validate_directory(&directory)?;
@@ -57,6 +58,7 @@ pub(crate) async fn create(
       &SUPPORTED_MOD_LOADERS,
       &loader,
       /* inclusive (default behaviour) */ None,
+      /* custom suggestion (auto-lists variants otherwise) */ None,
     )?;
 
     (name, version, directory, loader)
