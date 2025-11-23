@@ -1,4 +1,4 @@
-//! Implements all the profile subcommands
+//! Implements all the profile subcommands.
 
 mod utils;
 
@@ -12,11 +12,7 @@ const SUPPORTED_MOD_LOADERS: [&'static str; 2] = ["none", "fabric"];
 ///
 /// The completed profile is appended to the config. If the config has no
 /// profiles yet, the new one becomes the active profile.
-pub(crate) async fn create(
-  name: &Option<String>,
-  mut config: Config,
-  args: &crate::Args,
-) -> Result<()> {
+pub async fn create(name: &Option<String>, mut config: Config, args: &crate::Args) -> Result<()> {
   let (name, version, directory, loader) = if args.non_interactive {
     let mut inputs = NonInteractiveInput {
       fields: 4,

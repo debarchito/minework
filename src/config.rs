@@ -1,3 +1,5 @@
+//! Everything releated to the config file.
+
 use color_eyre::eyre;
 use color_eyre::eyre::{Result, WrapErr};
 use crossterm::ExecutableCommand;
@@ -9,9 +11,9 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct Config {
-  pub(crate) version: String,
-  pub(crate) profile: ProfileConfig,
+pub struct Config {
+  pub version: String,
+  pub profile: ProfileConfig,
 }
 
 impl Default for Config {
@@ -27,40 +29,40 @@ impl Default for Config {
 }
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct ProfileConfig {
-  pub(crate) active: Option<usize>,
-  pub(crate) list: Vec<ProfileOptions>,
+pub struct ProfileConfig {
+  pub active: Option<usize>,
+  pub list: Vec<ProfileOptions>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct ProfileOptions {
-  pub(crate) name: String,
-  pub(crate) game: GameConfig,
-  pub(crate) r#mod: ModConfig,
+pub struct ProfileOptions {
+  pub name: String,
+  pub game: GameConfig,
+  pub r#mod: ModConfig,
 }
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct GameConfig {
-  pub(crate) version: String,
-  pub(crate) directory: PathBuf,
+pub struct GameConfig {
+  pub version: String,
+  pub directory: PathBuf,
 }
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct ModConfig {
-  pub(crate) loader: String,
-  pub(crate) list: Vec<ModOptions>,
+pub struct ModConfig {
+  pub loader: String,
+  pub list: Vec<ModOptions>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct ModOptions {
-  pub(crate) name: String,
-  pub(crate) identifier: String,
+pub struct ModOptions {
+  pub name: String,
+  pub identifier: String,
 }
 
 /// Initializes the config file and returns a `Config`.
 ///
 /// If the config file doesn't exist, it will be created with default values.
-pub(crate) fn init(config_file: &Path) -> Result<Config> {
+pub fn init(config_file: &Path) -> Result<Config> {
   if config_file.exists() && !config_file.is_file() {
     eyre::bail!("{config_file:?} exists but is not a file");
   }

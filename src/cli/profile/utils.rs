@@ -6,12 +6,12 @@ use inquire::validator::{ErrorMessage, Validation};
 use inquire::{Select, Text};
 use std::path::PathBuf;
 
-/// Get the profile name.  
+/// Get the profile name.
 ///
 /// If a name was passed in, it is returned. If not, the user is prompted,
 /// and the input is validated to ensure the config does not already
 /// contain a profile with the same case-insensitive name.
-pub(crate) fn prompt_profile_name(name: &Option<String>, config: &Config) -> Result<String> {
+pub fn prompt_profile_name(name: &Option<String>, config: &Config) -> Result<String> {
   if let Some(n) = name {
     if config
       .profile
@@ -49,7 +49,7 @@ pub(crate) fn prompt_profile_name(name: &Option<String>, config: &Config) -> Res
 
 /// Fetch the list of Minecraft versions from Modrinth and prompt the user
 /// to pick one.
-pub(crate) async fn prompt_minecraft_version() -> Result<String> {
+pub async fn prompt_minecraft_version() -> Result<String> {
   let versions: Vec<String> = Ferinth::default()
     .tag_list_game_versions()
     .await?
@@ -67,11 +67,11 @@ pub(crate) async fn prompt_minecraft_version() -> Result<String> {
 
 /// Prompt for the game directory and ensure it is valid.
 ///
-/// The user may enter `~` or other shell-expanded paths.  
+/// The user may enter `~` or other shell-expanded paths.
 /// The validator checks:
 ///   - the path exists
-///   - it is a directory  
-pub(crate) fn prompt_game_directory() -> Result<PathBuf> {
+///   - it is a directory
+pub fn prompt_game_directory() -> Result<PathBuf> {
   let dir = Text::new("Enter the location of the game:")
     .with_validator(|s: &str| match shellexpand::full(s) {
       Ok(expanded) => {
@@ -102,10 +102,10 @@ pub(crate) fn prompt_game_directory() -> Result<PathBuf> {
   )
 }
 
-/// Prompt the user to choose a mod loader.  
+/// Prompt the user to choose a mod loader.
 ///
 /// `none` can be chosen to indicate vanilla.
-pub(crate) fn prompt_mod_loader() -> Result<String> {
+pub fn prompt_mod_loader() -> Result<String> {
   Select::new("Which mod loader to use?", vec!["none", "fabric"])
     .prompt()
     .map(|s| s.to_string())
@@ -113,7 +113,7 @@ pub(crate) fn prompt_mod_loader() -> Result<String> {
 }
 
 /// Write the updated configuration to the config file in pretty JSON format.
-pub(crate) fn write_config(config_file: &PathBuf, config: &Config) -> Result<()> {
+pub fn write_config(config_file: &PathBuf, config: &Config) -> Result<()> {
   std::fs::write(
     config_file,
     serde_json::to_string_pretty(config)

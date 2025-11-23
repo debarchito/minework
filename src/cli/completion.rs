@@ -1,4 +1,4 @@
-//! Implements all the completion subcommands
+//! Implements all the completion subcommands.
 
 use clap::CommandFactory;
 
@@ -6,7 +6,7 @@ use clap::CommandFactory;
 ///
 /// Writes the completion script for the specified shell to standard output.
 /// Supported shells include Bash, Zsh, Fish, Elvish, PowerShell, and Nushell.
-pub(crate) fn generate(shell: super::Shell) {
+pub fn generate(shell: super::Shell) {
   use super::Shell;
   use clap_complete::generate;
   use clap_complete::shells::Shell::*;

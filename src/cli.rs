@@ -1,5 +1,7 @@
-pub(crate) mod completion;
-pub(crate) mod profile;
+//! Everything related to the cli.
+
+pub mod completion;
+pub mod profile;
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
@@ -7,29 +9,29 @@ use std::path::PathBuf;
 /// Minework helps you manage your Minecraft mods, mod packs, resource packs, data packs, shaders and plugins from Modrinth.
 #[derive(Parser)]
 #[command(version, about)]
-pub(crate) struct Args {
+pub struct Args {
   #[command(subcommand)]
-  pub(crate) subcommand: SubCommand,
+  pub subcommand: SubCommand,
   /// Specify the file path to read the configuration from.
   #[arg(short, long, default_value = "$XDG_CONFIG_HOME/minework/config.json")]
-  pub(crate) config_file: PathBuf,
-  /// Disable colored outputs. Minework also supports the $NO_COLOR environment variable (https://no-color.org) to disable colors.
+  pub config_file: PathBuf,
+  /// Disable colored outputs. Minework also supports the $NO_COLOR environment variable (<https://no-color.org>) to disable colors.
   #[arg(short = 'C', long)]
-  pub(crate) no_color: bool,
+  pub no_color: bool,
   /// Disable the file location section in error outputs.
   #[arg(short = 'L', long)]
-  pub(crate) no_location_section: bool,
+  pub no_location_section: bool,
   /// Disable the backtrace section in error outputs.
   #[arg(short = 'B', long)]
-  pub(crate) no_backtrace_section: bool,
+  pub no_backtrace_section: bool,
   /// Run in non-interactive mode. Input is expected either via the $MINEWORK_ENVIN environment variable or stdin with the former getting higher priority.
   #[arg(short = 'I', long)]
-  pub(crate) non_interactive: bool,
+  pub non_interactive: bool,
 }
 
 /// Manage profiles
 #[derive(Subcommand)]
-pub(crate) enum SubCommand {
+pub enum SubCommand {
   /// Manage profiles.
   #[command(subcommand, visible_alias = "pr")]
   Profile(ProfileCommand),
@@ -57,7 +59,7 @@ pub(crate) enum SubCommand {
 }
 
 #[derive(Subcommand)]
-pub(crate) enum ProfileCommand {
+pub enum ProfileCommand {
   /// Create a new profile. Tries to enages a picker if no default name is provided.
   #[command(visible_aliases = &["c", "add", "a"])]
   Create { name: Option<String> },
@@ -79,26 +81,26 @@ pub(crate) enum ProfileCommand {
 }
 
 #[derive(Subcommand)]
-pub(crate) enum ModCommand {}
+pub enum ModCommand {}
 
 #[derive(Subcommand)]
-pub(crate) enum ModpackCommand {}
+pub enum ModpackCommand {}
 
 #[derive(Subcommand)]
-pub(crate) enum ResourcepackCommand {}
+pub enum ResourcepackCommand {}
 
 #[derive(Subcommand)]
-pub(crate) enum DatapackCommand {}
+pub enum DatapackCommand {}
 
 #[derive(Subcommand)]
-pub(crate) enum ShaderCommand {}
+pub enum ShaderCommand {}
 
 #[derive(Subcommand)]
-pub(crate) enum PluginCommand {}
+pub enum PluginCommand {}
 
 #[derive(Subcommand)]
 /// Supported shells.
-pub(crate) enum Shell {
+pub enum Shell {
   /// Generate completions for Bash.
   Bash,
   /// Generate completions for ZSH.

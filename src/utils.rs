@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 /// # Arguments
 ///
 /// * `path` - The target to expand.
-pub(crate) fn expand_path(path: impl AsRef<Path>) -> Result<PathBuf> {
+pub fn expand_path(path: impl AsRef<Path>) -> Result<PathBuf> {
   let path = path.as_ref();
   let path_string = path.display().to_string();
   let path_expanded =
@@ -26,7 +26,7 @@ pub(crate) fn expand_path(path: impl AsRef<Path>) -> Result<PathBuf> {
 /// # Arguments
 ///
 /// * `args` - The Args struct constructed by clap.
-pub(crate) fn setup_hook(args: &crate::cli::Args) -> Result<()> {
+pub fn setup_hook(args: &crate::cli::Args) -> Result<()> {
   let mut builder = HookBuilder::new();
 
   // https://no-color.org
@@ -59,7 +59,7 @@ pub(crate) fn setup_hook(args: &crate::cli::Args) -> Result<()> {
 /// # Arguments
 ///
 /// * `string` - The target to split.
-pub(crate) fn extract_values(string: impl AsRef<str>) -> Vec<String> {
+pub fn extract_values(string: impl AsRef<str>) -> Vec<String> {
   string
     .as_ref()
     .split("<>")
@@ -68,12 +68,12 @@ pub(crate) fn extract_values(string: impl AsRef<str>) -> Vec<String> {
     .collect()
 }
 
-/// Gets input either via the `$MINEWORK_ENVIN` environment variable or `stdin`, while extracting useful values using the `crate::utils::extract_values` function.
+/// Gets input either via the `$MINEWORK_ENVIN` environment variable or `stdin`, while extracting useful values using the [`extract_values`] function.
 ///
 /// # Arguments
 ///
 /// * `suggestion` - The message to print in the `Suggestion` section when no input is provided.
-pub(crate) fn get_non_interactive_input<'a>(suggestion: impl Into<String>) -> Result<Vec<String>> {
+pub fn get_non_interactive_input(suggestion: impl Into<String>) -> Result<Vec<String>> {
   let bail_message = "Non-interactive mode expects input either via the $MINEWORK_ENVIN environment variable or stdin with the former getting higher priority.";
 
   if let Ok(env) = env::var("MINEWORK_ENVIN") {
@@ -101,7 +101,7 @@ pub(crate) fn get_non_interactive_input<'a>(suggestion: impl Into<String>) -> Re
 }
 
 /// Query Modrinth to get the latest list of all existing Minecraft versions.
-pub(crate) async fn get_minecraft_versions() -> Result<Vec<String>> {
+pub async fn get_minecraft_versions() -> Result<Vec<String>> {
   Ok(
     ferinth::Ferinth::default()
       .tag_list_game_versions()
@@ -113,13 +113,13 @@ pub(crate) async fn get_minecraft_versions() -> Result<Vec<String>> {
 }
 
 /// Configuration for non-interactive input parsing.
-pub(crate) struct NonInteractiveInput<'a> {
+pub struct NonInteractiveInput<'a> {
   /// Number of expected input fields.
-  pub(crate) fields: usize,
+  pub fields: usize,
   /// Description of each field for the help message.
-  pub(crate) descriptions: &'a [&'a str],
+  pub descriptions: &'a [&'a str],
   /// Example commands to show in the help message.
-  pub(crate) examples: &'a [&'a str],
+  pub examples: &'a [&'a str],
 }
 
 impl<'a> NonInteractiveInput<'a> {
@@ -147,7 +147,7 @@ impl<'a> NonInteractiveInput<'a> {
   }
 
   /// Parse and validate input count.
-  pub(crate) fn parse(&self) -> Result<Vec<String>> {
+  pub fn parse(&self) -> Result<Vec<String>> {
     let suggestion = self.build_suggestion_message();
     let mut lines = get_non_interactive_input(&suggestion)?;
 
@@ -171,7 +171,7 @@ impl<'a> NonInteractiveInput<'a> {
 /// # Arguments
 ///
 /// * `path` - The target to validate.
-pub(crate) fn validate_directory(path: impl AsRef<Path>) -> Result<()> {
+pub fn validate_directory(path: impl AsRef<Path>) -> Result<()> {
   let path = path.as_ref();
 
   if !path.exists() {
@@ -195,7 +195,7 @@ pub(crate) fn validate_directory(path: impl AsRef<Path>) -> Result<()> {
 ///   - `None` or `Some(true)`: Target MUST exist in variants (inclusive check). This is the default behaviour.
 ///   - `Some(false)`: Target MUST NOT exist in variants (exclusive check, for uniqueness).
 /// * `suggestion` - Custom content for the suggestion section. If None, lists all variants.
-pub(crate) fn validate_against_enum(
+pub fn validate_against_enum(
   variants: &[impl AsRef<str>],
   string: &str,
   inclusive: Option<bool>,
@@ -234,7 +234,7 @@ pub(crate) fn validate_against_enum(
 ///
 /// * `minecraft_versions` - Slice of valid Minecraft version strings.
 /// * `version` - The version string to validate.
-pub(crate) fn validate_against_minecraft_versions(
+pub fn validate_against_minecraft_versions(
   minecraft_versions: &[impl AsRef<str>],
   version: &str,
 ) -> Result<()> {
