@@ -1,10 +1,10 @@
 //! Implements all the profile subcommands.
 
-mod utils;
-
 use crate::config::*;
-use crate::utils::*;
+use crate::utils::{validators, *};
 use color_eyre::eyre::Result;
+use inquire::{Select, Text};
+use std::path::PathBuf;
 
 const SUPPORTED_MOD_LOADERS: [&str; 2] = ["none", "fabric"];
 
@@ -13,6 +13,13 @@ const SUPPORTED_MOD_LOADERS: [&str; 2] = ["none", "fabric"];
 /// The completed profile is appended to the config. If the config has no
 /// profiles yet, the new one becomes the active profile.
 pub async fn create(name: &Option<String>, mut config: Config, args: &crate::Args) -> Result<()> {
+  let profile_names: Vec<String> = config
+    .profile
+    .list
+    .iter()
+    .map(|p| p.name.to_owned())
+    .collect();
+  let minecraft_versions = get_minecraft_versions().await?;
   let (name, version, directory, loader) = if args.non_interactive {
     let mut inputs = NonInteractiveInput {
       fields: 4,
@@ -29,13 +36,7 @@ pub async fn create(name: &Option<String>, mut config: Config, args: &crate::Arg
     }.parse()?;
 
     let name = inputs.remove(0);
-    let profile_names: Vec<&str> = config
-      .profile
-      .list
-      .iter()
-      .map(|p| p.name.as_str())
-      .collect();
-    validate_against_enum(
+    validators::against_enum(
       &profile_names,
       &name,
       /* inclusive (default behaviour) */ Some(false),
@@ -43,26 +44,42 @@ pub async fn create(name: &Option<String>, mut config: Config, args: &crate::Arg
     )?;
 
     let version = inputs.remove(0);
-    let minecraft_versions = get_minecraft_versions().await?;
-    validate_against_minecraft_versions(&minecraft_versions, &version)?;
+    validators::against_minecraft_versions(&minecraft_versions, &version)?;
 
     let directory = expand_path(inputs.remove(0))?;
-    validate_directory(&directory)?;
+    validators::is_valid_directory(&directory)?;
 
     let loader = inputs.remove(0).to_lowercase();
-    validate_against_enum(
-      &SUPPORTED_MOD_LOADERS,
-      &loader,
-      /* inclusive (default behaviour) */ None,
-      /* custom suggestion (auto-lists variants otherwise) */ None,
-    )?;
+    validators::against_enum(&SUPPORTED_MOD_LOADERS, &loader, None, None)?;
 
     (name, version, directory, loader)
   } else {
-    let name = utils::prompt_profile_name(name, &config)?;
-    let version = utils::prompt_minecraft_version().await?;
-    let directory = utils::prompt_game_directory()?;
-    let loader = utils::prompt_mod_loader()?;
+    let name = if let Some(provided_name) = name {
+      validators::against_enum(&profile_names, provided_name, Some(false), None)?;
+      provided_name.clone()
+    } else {
+      Text::new("What should this profile be called?")
+        .with_validators(&[
+          validators::inquire::is_non_empty("Profile name"),
+          validators::inquire::against_enum(&profile_names, Some(false)),
+        ])
+        .prompt()?
+    };
+    let version = Select::new(
+      "Which version of Minecraft should this profile target?",
+      minecraft_versions,
+    )
+    .prompt()?;
+    let directory = Text::new("Enter the location of the game:")
+      .with_validators(&[
+        validators::inquire::is_non_empty("Profile name"),
+        validators::inquire::is_valid_directory(),
+      ])
+      .prompt()?;
+    let directory = shellexpand::full(&directory).map(|s| PathBuf::from(s.as_ref()))?;
+    let loader = Select::new("Which mod loader to use?", SUPPORTED_MOD_LOADERS.into())
+      .prompt()?
+      .to_owned();
 
     (name, version, directory, loader)
   };
@@ -81,7 +98,7 @@ pub async fn create(name: &Option<String>, mut config: Config, args: &crate::Arg
     config.profile.active = Some(0);
   }
 
-  utils::write_config(&args.config_file, &config)?;
+  write_config(&args.config_file, &config)?;
   println!("✓ Profile '{}' created successfully", name);
   Ok(())
 }
