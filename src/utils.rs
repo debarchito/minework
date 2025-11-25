@@ -9,17 +9,24 @@ use std::env;
 use std::io::{self, IsTerminal, Read};
 use std::path::{Path, PathBuf};
 
-/// Write the updated configuration to the config file in pretty JSON format.
-pub fn write_config(config_file: &PathBuf, config: &crate::config::Config) -> Result<()> {
-  std::fs::write(
-    config_file,
-    serde_json::to_string_pretty(config)
-      .context("Malformed config. This is a bug, please report it")?
-      .as_bytes(),
-  )
-  .context(format!("Failed to write default config to {config_file:?}"))?;
-
-  Ok(())
+/// Format the input string as PascalCase.
+///
+/// # Arguments
+///
+/// * `string` - The target to pascalize.
+pub fn pascalize(string: impl AsRef<str>) -> String {
+  string
+    .as_ref()
+    .split(|c: char| !c.is_alphanumeric())
+    .filter(|&word| !word.is_empty())
+    .map(|word| {
+      let mut chars = word.chars();
+      match chars.next() {
+        None => String::new(),
+        Some(first_char) => first_char.to_uppercase().collect::<String>() + chars.as_str(),
+      }
+    })
+    .collect()
 }
 
 /// Expand any combination of a relative path, tilde, and environment variables into an absolute path.
