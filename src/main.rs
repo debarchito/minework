@@ -29,6 +29,7 @@ async fn main() -> Result<()> {
     SubCommand::Profile(ProfileCommand::Info { name, picker }) => {
       profile::info::init(name.as_ref(), *picker, config, &args)?
     }
+    SubCommand::Profile(ProfileCommand::List) => profile::list::init(config)?,
     _ => (),
   }
 

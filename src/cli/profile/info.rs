@@ -52,8 +52,13 @@ pub fn init(name: Option<&String>, picker: bool, config: Config, args: &crate::A
   };
 
   let profile = &config.profile.list[profile_index];
-  let mut table = Table::new();
+  let is_active = if config.profile.active == Some(profile_index) {
+    true
+  } else {
+    false
+  };
 
+  let mut table = Table::new();
   table
     .load_preset(UTF8_FULL)
     .apply_modifier(UTF8_ROUND_CORNERS)
@@ -67,24 +72,30 @@ pub fn init(name: Option<&String>, picker: bool, config: Config, args: &crate::A
         .add_attribute(Attribute::Bold),
     ])
     .add_row(vec![
-      Cell::new("Profile Name").fg(Color::Blue),
-      Cell::new(&profile.name),
+      Cell::new("Profile name").fg(Color::Blue),
+      if is_active {
+        Cell::new(format!("{} (active ✓)", &profile.name))
+          .fg(Color::Green)
+          .add_attribute(Attribute::Italic)
+      } else {
+        Cell::new(&profile.name)
+      },
     ])
     .add_row(vec![
-      Cell::new("Minecraft Version").fg(Color::Blue),
+      Cell::new("Minecraft version").fg(Color::Blue),
       Cell::new(&profile.game.version),
     ])
     .add_row(vec![
-      Cell::new("Minecraft Directory").fg(Color::Blue),
+      Cell::new("Minecraft directory").fg(Color::Blue),
       Cell::new(profile.game.directory.display().to_string()),
     ])
     .add_row(vec![
-      Cell::new("Mod Loader").fg(Color::Blue),
+      Cell::new("Mod loader").fg(Color::Blue),
       Cell::new(&profile.r#mod.loader),
     ])
     .add_row(vec![
-      Cell::new("Mods Installed").fg(Color::Blue),
-      Cell::new(profile.r#mod.list.len().to_string()).fg(Color::Magenta),
+      Cell::new("# of mods installed").fg(Color::Blue),
+      Cell::new(profile.r#mod.list.len().to_string()).fg(Color::Blue),
     ]);
 
   if let Some(col) = table.column_mut(1) {

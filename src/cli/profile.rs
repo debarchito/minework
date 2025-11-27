@@ -2,5 +2,6 @@
 
 pub mod create;
 pub mod info;
+pub mod list;
 
 const SUPPORTED_MOD_LOADERS: [&str; 2] = ["None", "Fabric"];

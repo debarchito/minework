@@ -18,10 +18,7 @@ pub async fn init(name: Option<&String>, mut config: Config, args: &crate::Args)
     .map(|p| p.name.to_owned())
     .collect();
 
-  println!(
-    "{} the list of available Minecraft versions...",
-    "Downloading".green()
-  );
+  println!("{} Available Minecraft versions.", "[FETCHING]".green());
   let minecraft_versions = utils::get_minecraft_versions().await?;
 
   let (name, version, directory, loader) = if args.non_interactive {
