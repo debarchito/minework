@@ -1,17 +1,29 @@
-### 1. Build (Linux)
+### 1. Build/Run (Linux)
 
 This project makes use of the [mold](https://github.com/rui314/mold) linker. See
 [flake.nix](/flake.nix) and [.cargo/config.toml](/.cargo/config.toml).
 
-```sh
+> **NOTE:** The project has only been tested on Linux. I cannot guarentee (at-least in the short term) if it works on Windows or macOS. For starters, mold doesn't support either Windows or macOS; so you could potentially start testing by changing the linker being used for this project. On macOS particularly, you could use the new linker that Apple ships with Xcode 15 and above; it's compareable to mold when it comes to speed and parallelization.
+
+```fish
 nix build github:debarchito/minework#minework
+./result/bin/minework --help
 # or
+nix run github:debarchito/minework#minework -- --help
+```
+
+Alternatively, if you don't want to utilize [Nix](https://nixos.org):
+
+```fish
 git clone git@github.com:debarchito/minework
 cd minework
 cargo build --release
+./target/release/minework --help
 ```
 
 ### 2. Development
+
+This project ships with an [.envrc](/.envrc) file that can be used to scaffold a development shell using [direnv](https://direnv.net) and Nix.
 
 ```
 direnv allow
