@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 #[derive(Serialize, Deserialize)]
 pub struct Config {
   /// The version of the config format.
-  pub version: String,
+  pub version: u8,
   /// The profile config containing all user-defined profiles.
   pub profile: ProfileConfig,
 }
@@ -21,7 +21,7 @@ pub struct Config {
 impl Default for Config {
   fn default() -> Self {
     Config {
-      version: "1".into(),
+      version: 1u8,
       profile: ProfileConfig {
         active: None,
         list: Vec::new(),
@@ -180,12 +180,14 @@ pub struct ModConfig {
 pub struct ModOptions {
   /// The display name of the mod.
   pub name: String,
+  /// Where is the mod from?
+  pub from: String,
   /// The unique identifier of the mod.
-  pub identifier: String,
+  pub id: String,
 }
 
 impl std::fmt::Display for ModOptions {
   fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-    write!(f, "{} ({})", self.name, self.identifier)
+    write!(f, "{} ({})", self.name, self.id)
   }
 }

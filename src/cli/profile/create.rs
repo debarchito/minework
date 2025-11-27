@@ -109,6 +109,11 @@ pub async fn init(name: Option<&String>, mut config: Config, args: &crate::Args)
     &args.config_file,
     None, // The parent directory already exists.
   )?;
-  println!("✓ Profile '{}' created successfully", name);
+  println!(
+    "{} Profile {} created successfully!",
+    "[SUCCESS]".green(),
+    name.cyan()
+  );
+
   Ok(())
 }

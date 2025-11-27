@@ -1,16 +1,16 @@
 //! Implements all the completion subcommands.
 
+use super::Shell;
 use clap::CommandFactory;
+use clap_complete::shells::Shell::*;
+use clap_complete_nushell::Nushell;
 
 /// Generates shell completion scripts.
 ///
 /// Writes the completion script for the specified shell to standard output.
 /// Supported shells include Bash, Zsh, Fish, Elvish, PowerShell, and Nushell.
 pub fn generate(shell: super::Shell) {
-  use super::Shell;
   use clap_complete::generate;
-  use clap_complete::shells::Shell::*;
-  use clap_complete_nushell::Nushell;
 
   let mut cmd = super::Args::command();
   let bin = cmd.get_name().to_string();
