@@ -1,4 +1,4 @@
-//! Implementation of the `profile info` subcommand
+//! Implementation of the `profile list` subcommand
 
 use crate::config::*;
 use color_eyre::eyre::Result;

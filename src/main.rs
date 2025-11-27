@@ -30,6 +30,9 @@ async fn main() -> Result<()> {
       profile::info::init(name.as_ref(), *picker, config, &args)?
     }
     SubCommand::Profile(ProfileCommand::List) => profile::list::init(config)?,
+    SubCommand::Profile(ProfileCommand::Delete { name }) => {
+      profile::delete::init(name.as_ref(), config, &args)?
+    }
     _ => (),
   }
 

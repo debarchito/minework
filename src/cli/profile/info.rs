@@ -1,6 +1,7 @@
 //! Implementation of the `profile info` subcommand.
 
 use crate::config::*;
+use color_eyre::eyre;
 use color_eyre::eyre::Result;
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
@@ -43,7 +44,7 @@ pub fn init(name: Option<&String>, picker: bool, config: Config, args: &crate::A
       .list
       .iter()
       .position(|p| p.name == selected_name)
-      .expect("Selected profile should exist")
+      .ok_or_else(|| eyre::eyre!("Selected profile should exist"))?
   } else {
     config
       .profile
