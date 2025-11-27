@@ -71,7 +71,12 @@ pub enum ProfileCommand {
   List,
   /// Show information about an existing profile. Tries to default to active profile.
   #[command(visible_alias = "i")]
-  Info { name: Option<String> },
+  Info {
+    name: Option<String>,
+    /// Open the picker to interactively select a profile. It is not supported in non-interactive mode.
+    #[arg(short, long)]
+    picker: bool,
+  },
   /// Switch to another profile. Tries to enages a picker if no default name is provided in interactive mode.
   #[command(visible_alias = "s")]
   Switch { name: Option<String> },

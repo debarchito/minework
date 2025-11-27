@@ -5,8 +5,22 @@ use color_eyre::eyre::Result;
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
 use comfy_table::*;
+use crossterm::style::Stylize;
+use inquire::Select;
 
-pub fn init(name: Option<&String>, config: Config, _args: &crate::Args) -> Result<()> {
+/// Lists info about a profile.
+/// If no profile name is provided, tries to fallback to the default profile.
+pub fn init(name: Option<&String>, picker: bool, config: Config, args: &crate::Args) -> Result<()> {
+  let picker = if picker && args.non_interactive {
+    println!(
+      "{} Picker is not supported in non-interactive mode. Trying to fallback to the default profile.",
+      "[WARNING]".yellow()
+    );
+    false
+  } else {
+    picker
+  };
+
   let profile_index = if let Some(profile_name) = name {
     config
       .profile
@@ -14,26 +28,47 @@ pub fn init(name: Option<&String>, config: Config, _args: &crate::Args) -> Resul
       .iter()
       .position(|p| p.name == *profile_name)
       .ok_or_else(|| color_eyre::eyre::eyre!("Profile {:?} not found", profile_name))?
+  } else if picker {
+    let profile_names: Vec<String> = config.profile.list.iter().map(|p| p.name.clone()).collect();
+
+    if profile_names.is_empty() {
+      return Err(color_eyre::eyre::eyre!("No profiles found"));
+    }
+
+    let selected_name =
+      Select::new("Select a profile to view info about:", profile_names).prompt()?;
+
+    config
+      .profile
+      .list
+      .iter()
+      .position(|p| p.name == selected_name)
+      .expect("Selected profile should exist")
   } else {
     config
       .profile
       .active
       .ok_or_else(|| color_eyre::eyre::eyre!("No active profile set"))?
   };
-  let profile = &config.profile.list[profile_index];
 
+  let profile = &config.profile.list[profile_index];
   let mut table = Table::new();
+
   table
     .load_preset(UTF8_FULL)
     .apply_modifier(UTF8_ROUND_CORNERS)
     .set_content_arrangement(ContentArrangement::Dynamic)
     .set_header(vec![
-      Cell::new("Name")
+      Cell::new("Property")
         .fg(Color::Green)
         .add_attribute(Attribute::Bold),
-      Cell::new(&profile.name)
+      Cell::new("Value")
         .fg(Color::Green)
         .add_attribute(Attribute::Bold),
+    ])
+    .add_row(vec![
+      Cell::new("Profile Name").fg(Color::Blue),
+      Cell::new(&profile.name),
     ])
     .add_row(vec![
       Cell::new("Minecraft Version").fg(Color::Blue),
@@ -57,35 +92,6 @@ pub fn init(name: Option<&String>, config: Config, _args: &crate::Args) -> Resul
   }
 
   println!("{table}");
-
-  if !profile.r#mod.list.is_empty() {
-    let mut mods_table = Table::new();
-    mods_table
-      .load_preset(UTF8_FULL)
-      .apply_modifier(UTF8_ROUND_CORNERS)
-      .set_content_arrangement(ContentArrangement::Dynamic)
-      .set_header(vec![
-        Cell::new("#")
-          .fg(Color::Green)
-          .add_attribute(Attribute::Bold),
-        Cell::new("Mod(s)")
-          .fg(Color::Green)
-          .add_attribute(Attribute::Bold),
-      ]);
-
-    for (i, mod_entry) in profile.r#mod.list.iter().enumerate() {
-      mods_table.add_row(vec![
-        Cell::new((i + 1).to_string()).fg(Color::DarkGrey),
-        Cell::new(mod_entry),
-      ]);
-    }
-
-    if let Some(col) = mods_table.column_mut(0) {
-      col.set_cell_alignment(CellAlignment::Center);
-    }
-
-    println!("{mods_table}");
-  }
 
   Ok(())
 }
