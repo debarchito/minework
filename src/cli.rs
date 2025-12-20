@@ -55,7 +55,7 @@ pub enum SubCommand {
   Plugin(PluginCommand),
   /// Generate completions for your shell.
   #[command(subcommand)]
-  Completion(Shell),
+  Completions(Shell),
 }
 
 #[derive(Subcommand)]

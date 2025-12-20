@@ -13,7 +13,7 @@ async fn main() -> Result<()> {
 
   utils::setup_hook(&args)?;
 
-  if let SubCommand::Completion(shell) = args.subcommand {
+  if let SubCommand::Completions(shell) = args.subcommand {
     completion::generate(shell);
     return Ok(());
   }
