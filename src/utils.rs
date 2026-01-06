@@ -19,13 +19,7 @@ pub fn pascalize(string: impl AsRef<str>) -> String {
     .as_ref()
     .split(|c: char| !c.is_alphanumeric())
     .filter(|&word| !word.is_empty())
-    .map(|word| {
-      let mut chars = word.chars();
-      match chars.next() {
-        None => String::new(),
-        Some(first_char) => first_char.to_uppercase().collect::<String>() + chars.as_str(),
-      }
-    })
+    .map(|word| word[0..1].to_uppercase() + &word[1..])
     .collect()
 }
 
