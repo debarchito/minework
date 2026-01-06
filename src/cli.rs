@@ -1,6 +1,6 @@
 //! Everything related to the cli.
 
-pub mod completion;
+pub mod completions;
 pub mod profile;
 
 use clap::{Parser, Subcommand};
@@ -15,7 +15,7 @@ pub struct Args {
   /// Specify the file path to read the configuration from.
   #[arg(short, long, default_value = "$XDG_CONFIG_HOME/minework/config.json")]
   pub config_file: PathBuf,
-  /// Disable colored outputs. Minework also supports the $NO_COLOR environment variable (<https://no-color.org>) to disable colors.
+  /// Disable colored outputs. Additionally, minework respects the $NO_COLOR environment variable (<https://no-color.org>) to disable colors.
   #[arg(short = 'C', long)]
   pub no_color: bool,
   /// Disable the file location section in error outputs.

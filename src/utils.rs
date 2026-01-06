@@ -55,7 +55,7 @@ pub fn setup_hook(args: &crate::cli::Args) -> Result<()> {
   let no_color = args.no_color
     || env::var("NO_COLOR")
       .ok()
-      .map(|v| !v.is_empty() && (v == "1" || v.eq_ignore_ascii_case("true")))
+      .map(|v| !v.is_empty())
       .unwrap_or(false);
 
   if no_color {

@@ -81,26 +81,25 @@ pub fn against_minecraft_versions(
 ) -> Result<()> {
   let options = minecraft_versions
     .iter()
-    .take(20)
+    .take(10)
     .map(|v| format!("     • {}", v.as_ref().green()))
     .collect::<Vec<_>>()
     .join("\n");
 
   let total = minecraft_versions.len();
   let query = format!(
-    "{} {} {} {} {} {}",
+    "{} {} {} {} {}",
     "curl".cyan(),
     "-s https://api.modrinth.com/v2/tag/game_version |".yellow(),
     "jq".cyan(),
     "-r '.[].version' |".yellow(),
     "fzf".cyan(),
-    "-f '<QUERY>'".yellow(),
   );
 
-  let more_msg = if total > 20 {
+  let more_msg = if total > 10 {
     format!(
       "\n     ... and {} more.\n\n   Search all versions using:\n     {}",
-      total - 20,
+      total - 10,
       query
     )
   } else {
