@@ -3,72 +3,57 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     naersk.url = "github:nix-community/naersk";
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+    fenix = {
+      url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs =
     inputs@{
-      nixpkgs,
       flake-parts,
       naersk,
-      rust-overlay,
-      self,
+      fenix,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        inputs.flake-parts.flakeModules.easyOverlay
+      ];
+
       systems = [
         "x86_64-linux"
         "aarch64-linux"
       ];
+
       perSystem =
-        { system, ... }:
+        {
+          lib,
+          pkgs,
+          system,
+          config,
+          ...
+        }:
         let
-          pkgs = import nixpkgs {
-            inherit system;
-            overlays = [
-              (import rust-overlay)
-              self.overlays.default
-            ];
+          toolchain = fenix.packages.${system}.fromToolchainFile {
+            file = ./rust-toolchain.toml;
+            sha256 = "sha256-bzaPKy+/j9kZtGH/KbSsLhmWnRRzi6JhkouJT0tKfYE=";
           };
+          naersk' = pkgs.callPackage naersk {
+            rustc = toolchain;
+            cargo = toolchain;
+          };
+          nativeBuildInputs = [ pkgs.mold ];
+          RUSTFLAGS = "-Clink-args=-fuse-ld=mold";
         in
         {
-          packages = {
-            minework = pkgs.minework;
-            default = pkgs.minework;
-          };
-          devShells.default = pkgs.mkShell {
-            name = "minework";
-            nativeBuildInputs = [
-              (pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
-              pkgs.mold
-            ];
-            RUSTFLAGS = "-Clink-args=-fuse-ld=mold";
-          };
-        };
-      flake.overlays.default =
-        final: prev:
-        let
-          rust-overlay-pkg = import rust-overlay;
-          rustOverlay = rust-overlay-pkg final prev;
-        in
-        rustOverlay
-        // {
-          minework =
-            let
-              rust-toolchain = rustOverlay.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-              naersk' = final.callPackage naersk {
-                rustc = rust-toolchain;
-                cargo = rust-toolchain;
-              };
-            in
-            naersk'.buildPackage rec {
+          packages = rec {
+            minework = naersk'.buildPackage rec {
               name = "minework";
               version = "0.1.0";
-              src = ./.;
-              nativeBuildInputs = [ final.mold ];
-              RUSTFLAGS = "-Clink-args=-fuse-ld=mold";
+              src = lib.cleanSource ./.;
+
+              inherit nativeBuildInputs RUSTFLAGS;
+
               postInstall = ''
                 export HOME=$(mktemp -d)
                 mkdir -p $out/share/bash-completion/completions
@@ -85,6 +70,18 @@
                 $out/bin/${name} completions nushell > $out/share/nushell/vendor/autoload/${name}.nu
               '';
             };
+            default = minework;
+          };
+
+          overlayAttrs = {
+            inherit (config.packages) minework;
+          };
+
+          devShells.default = pkgs.mkShell {
+            name = "minework-dev";
+            nativeBuildInputs = [ toolchain ] ++ nativeBuildInputs;
+            inherit RUSTFLAGS;
+          };
         };
     };
 }
