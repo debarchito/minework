@@ -1,6 +1,6 @@
 //! Everything related to the cli.
 
-pub mod completions;
+pub mod completion;
 pub mod profile;
 
 use clap::{Parser, Subcommand};
@@ -55,12 +55,12 @@ pub enum SubCommand {
   Plugin(PluginCommand),
   /// Generate completions for your shell.
   #[command(subcommand)]
-  Completions(Shell),
+  Completion(Shell),
 }
 
 #[derive(Subcommand)]
 pub enum ProfileCommand {
-  /// Create a new profile. Tries to enages a picker if no default name is provided in interactive mode.
+  /// Create a new profile. Tries to engage a picker if no default name is provided in interactive mode.
   #[command(visible_aliases = &["c", "add", "a"])]
   Create { name: Option<String> },
   /// Edit an existing profile. Tries to default to active profile.
@@ -77,10 +77,10 @@ pub enum ProfileCommand {
     #[arg(short, long)]
     picker: bool,
   },
-  /// Switch to another profile. Tries to enages a picker if no default name is provided in interactive mode.
+  /// Switch to another profile. Tries to engage a picker if no default name is provided in interactive mode.
   #[command(visible_alias = "s")]
   Switch { name: Option<String> },
-  /// Delete an existing profile. Tries to enages a picker if no default name is provided in interactive mode.
+  /// Delete an existing profile. Tries to engage a picker if no default name is provided in interactive mode.
   #[command(visible_aliases = &["d", "remove", "r"])]
   Delete { name: Option<String> },
 }

@@ -57,17 +57,17 @@
               postInstall = ''
                 export HOME=$(mktemp -d)
                 mkdir -p $out/share/bash-completion/completions
-                $out/bin/${name} completions bash > $out/share/bash-completion/completions/${name}
+                $out/bin/${name} completion bash > $out/share/bash-completion/completions/${name}
                 mkdir -p $out/share/zsh/site-functions
-                $out/bin/${name} completions zsh > $out/share/zsh/site-functions/_${name}
+                $out/bin/${name} completion zsh > $out/share/zsh/site-functions/_${name}
                 mkdir -p $out/share/fish/vendor_completions.d
-                $out/bin/${name} completions fish > $out/share/fish/vendor_completions.d/${name}.fish
+                $out/bin/${name} completion fish > $out/share/fish/vendor_completions.d/${name}.fish
                 mkdir -p $out/share/elvish/lib
-                $out/bin/${name} completions elvish > $out/share/elvish/lib/${name}.elv
+                $out/bin/${name} completion elvish > $out/share/elvish/lib/${name}.elv
                 mkdir -p $out/share/powershell/Modules/${name}
-                $out/bin/${name} completions powershell > $out/share/powershell/Modules/${name}/${name}.psm1
+                $out/bin/${name} completion powershell > $out/share/powershell/Modules/${name}/${name}.psm1
                 mkdir -p $out/share/nushell/vendor/autoload
-                $out/bin/${name} completions nushell > $out/share/nushell/vendor/autoload/${name}.nu
+                $out/bin/${name} completion nushell > $out/share/nushell/vendor/autoload/${name}.nu
               '';
             };
             default = minework;
