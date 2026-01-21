@@ -3,21 +3,22 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     naersk.url = "github:nix-community/naersk";
-    fenix = {
-      url = "github:nix-community/fenix";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs =
     inputs@{
+      nixpkgs,
       flake-parts,
       naersk,
-      fenix,
+      rust-overlay,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.flake-parts.flakeModules.easyOverlay
+        flake-parts.flakeModules.easyOverlay
       ];
 
       systems = [
@@ -28,16 +29,18 @@
       perSystem =
         {
           lib,
-          pkgs,
           system,
           config,
           ...
         }:
         let
-          toolchain = fenix.packages.${system}.fromToolchainFile {
-            file = ./rust-toolchain.toml;
-            sha256 = "sha256-Ye65U/qzilPLte800N5oxFOY96shgG8bST8dbrF6Qh0=";
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [
+              (import rust-overlay)
+            ];
           };
+          toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
           naersk' = pkgs.callPackage naersk {
             rustc = toolchain;
             cargo = toolchain;
