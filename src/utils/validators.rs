@@ -7,7 +7,7 @@ use color_eyre::eyre::{self, Result};
 use crossterm::style::Stylize;
 use std::path::Path;
 
-/// Validate the existance of the provided path and it being a directory.
+/// Validate the existence of the provided path and it being a directory.
 ///
 /// # Arguments
 ///
@@ -33,7 +33,7 @@ pub fn is_valid_directory(path: impl AsRef<Path>) -> Result<()> {
 /// * `variants` - An iterable collection of string-like values representing valid options.
 /// * `string` - The string to validate.
 /// * `inclusive` - Controls validation behavior:
-///   - `None` or `Some(true)`: Target MUST exist in variants (inclusive check). This is the default behaviour.
+///   - `None` or `Some(true)`: Target MUST exist in variants (inclusive check). This is the default behavior.
 ///   - `Some(false)`: Target MUST NOT exist in variants (exclusive check, for uniqueness).
 /// * `suggestion` - Custom content for the suggestion section. If None, lists all variants.
 pub fn against_enum(
