@@ -50,7 +50,7 @@ environment.systemPackages = [
   # ...
 ];
 
-# or, consuming the package directly
+# or, consume the package directly
 environment.systemPackages = [
   # ...
   minework.packages.${system}.default
