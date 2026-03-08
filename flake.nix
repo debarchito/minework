@@ -1,7 +1,8 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
     naersk.url = "github:nix-community/naersk";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -12,6 +13,7 @@
     inputs@{
       nixpkgs,
       flake-parts,
+      systems,
       naersk,
       rust-overlay,
       ...
@@ -21,10 +23,7 @@
         flake-parts.flakeModules.easyOverlay
       ];
 
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      systems = import systems;
 
       perSystem =
         {
@@ -40,12 +39,16 @@
               (import rust-overlay)
             ];
           };
+
           toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+
           naersk' = pkgs.callPackage naersk {
             rustc = toolchain;
             cargo = toolchain;
           };
+
           nativeBuildInputs = [ pkgs.mold ];
+
           RUSTFLAGS = "-Clink-args=-fuse-ld=mold";
         in
         {
@@ -73,6 +76,7 @@
                 $out/bin/${name} completion nushell > $out/share/nushell/vendor/autoload/${name}.nu
               '';
             };
+
             default = minework;
           };
 
@@ -82,7 +86,9 @@
 
           devShells.default = pkgs.mkShell {
             name = "minework-dev";
+
             nativeBuildInputs = [ toolchain ] ++ nativeBuildInputs;
+
             inherit RUSTFLAGS;
           };
         };
