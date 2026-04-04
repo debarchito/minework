@@ -70,18 +70,39 @@ pub fn setup_hook(args: &crate::cli::Args) -> Result<()> {
     .wrap_err("Failed to install the constructed color_eyre hook")
 }
 
-/// Splits the input string at every `<>`, trims whitespace from individual entries, and returns them as a vector of non-empty strings.
+/// Splits the input string at commas, trims whitespace from individual entries, and returns them as a vector of non-empty strings.
 ///
 /// # Arguments
 ///
 /// * `string` - The target to split.
 pub fn extract_values(string: impl AsRef<str>) -> Vec<String> {
-  string
-    .as_ref()
-    .split("<>")
-    .map(|s| s.trim().to_owned())
-    .filter(|s| !s.is_empty())
-    .collect()
+  let mut result = Vec::new();
+  let mut current = String::new();
+  let mut escaped = false;
+
+  for c in string.as_ref().chars() {
+    match c {
+      '\\' if !escaped => escaped = true,
+      ',' if !escaped => {
+        let trimmed = current.trim();
+        if !trimmed.is_empty() {
+          result.push(trimmed.to_owned());
+        }
+        current.clear();
+      }
+      _ => {
+        current.push(c);
+        escaped = false;
+      }
+    }
+  }
+
+  let final_trimmed = current.trim();
+  if !final_trimmed.is_empty() {
+    result.push(final_trimmed.to_owned());
+  }
+
+  result
 }
 
 /// Gets input either via the `$MINEWORK_ENVIN` environment variable or `stdin`, while extracting useful values using the [`extract_values`] function.
@@ -157,7 +178,7 @@ impl<'a> NonInteractiveInput<'a> {
       .join("\n");
 
     format!(
-      "\n   Input is expected to have {} field(s) concatenated using the <> operator with each position mapping to:\n{}\n\n   Here are some examples for your reference:\n{}",
+      "\n   Input is expected to have {} field(s) concatenated using commas with each position mapping to:\n{}\n\n   Here are some examples for your reference:\n{}",
       self.fields, field_list, examples
     )
   }

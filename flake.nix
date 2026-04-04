@@ -1,12 +1,20 @@
 {
   inputs = {
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs-lib.follows = "nixpkgs";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs-lib";
+    };
     systems.url = "github:nix-systems/default";
-    naersk.url = "github:nix-community/naersk";
+    crane.url = "github:ipetkov/crane";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    advisory-db = {
+      url = "github:rustsec/advisory-db";
+      flake = false;
     };
   };
   outputs =
@@ -14,8 +22,9 @@
       nixpkgs,
       flake-parts,
       systems,
-      naersk,
+      crane,
       rust-overlay,
+      advisory-db,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -26,12 +35,7 @@
       systems = import systems;
 
       perSystem =
-        {
-          lib,
-          system,
-          config,
-          ...
-        }:
+        { system, config, ... }:
         let
           pkgs = import nixpkgs {
             inherit system;
@@ -41,55 +45,76 @@
           };
 
           toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+          craneLib = (crane.mkLib pkgs).overrideToolchain toolchain;
+          src = craneLib.cleanCargoSource ./.;
 
-          naersk' = pkgs.callPackage naersk {
-            rustc = toolchain;
-            cargo = toolchain;
+          commonArgs = {
+            inherit src;
+            strictDeps = true;
+            nativeBuildInputs = [ pkgs.mold ];
+            RUSTFLAGS = "-Clink-args=-fuse-ld=mold";
           };
 
-          nativeBuildInputs = [ pkgs.mold ];
+          cargoArtifacts = craneLib.buildDepsOnly commonArgs;
 
-          RUSTFLAGS = "-Clink-args=-fuse-ld=mold";
-        in
-        {
-          packages = rec {
-            minework = naersk'.buildPackage rec {
-              name = "minework";
+          minework = craneLib.buildPackage (
+            commonArgs
+            // rec {
+              pname = "minework";
               version = "0.1.0";
-              src = lib.cleanSource ./.;
 
-              inherit nativeBuildInputs RUSTFLAGS;
+              inherit cargoArtifacts;
 
               postInstall = ''
                 export HOME=$(mktemp -d)
                 mkdir -p $out/share/bash-completion/completions
-                $out/bin/${name} completion bash > $out/share/bash-completion/completions/${name}
+                $out/bin/${pname} completion bash > $out/share/bash-completion/completions/${pname}
                 mkdir -p $out/share/zsh/site-functions
-                $out/bin/${name} completion zsh > $out/share/zsh/site-functions/_${name}
+                $out/bin/${pname} completion zsh > $out/share/zsh/site-functions/_${pname}
                 mkdir -p $out/share/fish/vendor_completions.d
-                $out/bin/${name} completion fish > $out/share/fish/vendor_completions.d/${name}.fish
+                $out/bin/${pname} completion fish > $out/share/fish/vendor_completions.d/${pname}.fish
                 mkdir -p $out/share/elvish/lib
-                $out/bin/${name} completion elvish > $out/share/elvish/lib/${name}.elv
-                mkdir -p $out/share/powershell/Modules/${name}
-                $out/bin/${name} completion powershell > $out/share/powershell/Modules/${name}/${name}.psm1
+                $out/bin/${pname} completion elvish > $out/share/elvish/lib/${pname}.elv
+                mkdir -p $out/share/powershell/Modules/${pname}
+                $out/bin/${pname} completion powershell > $out/share/powershell/Modules/${pname}/${pname}.psm1
                 mkdir -p $out/share/nushell/vendor/autoload
-                $out/bin/${name} completion nushell > $out/share/nushell/vendor/autoload/${name}.nu
+                $out/bin/${pname} completion nushell > $out/share/nushell/vendor/autoload/${pname}.nu
               '';
+            }
+          );
+        in
+        {
+          packages = {
+            inherit minework;
+            default = minework;
+          };
+
+          checks = {
+            inherit minework;
+
+            minework-clippy = craneLib.cargoClippy (
+              commonArgs
+              // {
+                inherit cargoArtifacts;
+                cargoClippyExtraArgs = "--all-targets -- --deny warnings";
+              }
+            );
+
+            minework-fmt = craneLib.cargoFmt {
+              inherit src;
             };
 
-            default = minework;
+            minework-audit = craneLib.cargoAudit {
+              inherit src advisory-db;
+            };
           };
 
           overlayAttrs = {
             inherit (config.packages) minework;
           };
 
-          devShells.default = pkgs.mkShell {
-            name = "minework-dev";
-
-            nativeBuildInputs = [ toolchain ] ++ nativeBuildInputs;
-
-            inherit RUSTFLAGS;
+          devShells.default = craneLib.devShell {
+            checks = config.checks;
           };
         };
     };

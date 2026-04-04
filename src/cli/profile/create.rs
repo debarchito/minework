@@ -31,8 +31,8 @@ pub async fn init(name: Option<&String>, mut config: Config, args: &crate::Args)
         "The mod loader to use (none, fabric).",
       ],
       examples: &[
-        "MINEWORK_ENVIN=\"MineWorld <> 1.21.5 <> ~/.minecraft <> fabric\" minework --non-interactive profile create",
-        "echo \"MineWorld <> 1.21.5 <> $XDG_DATA_HOME/PrismLauncher/instances/MineWorld/minecraft <> Fabric\" | minework -I pr c",
+        "MINEWORK_ENVIN=\"MineWorld, 1.21.5, ~/.minecraft, fabric\" minework --non-interactive profile create",
+        "echo \"MineWorld, 1.21.5, $XDG_DATA_HOME/PrismLauncher/instances/MineWorld/minecraft, Fabric\" | minework -I pr c",
       ],
     }.parse()?;
 

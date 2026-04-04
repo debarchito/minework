@@ -53,11 +53,7 @@ pub fn init(name: Option<&String>, picker: bool, config: Config, args: &crate::A
   };
 
   let profile = &config.profile.list[profile_index];
-  let is_active = if config.profile.active == Some(profile_index) {
-    true
-  } else {
-    false
-  };
+  let is_active = config.profile.active == Some(profile_index);
 
   let mut table = Table::new();
   table

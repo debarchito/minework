@@ -127,10 +127,10 @@ fn delete_profiles(mut config: Config, profile_names: &[String], args: &crate::A
       );
     }
 
-    if let Some(active_idx) = config.profile.active {
-      if active_idx > index {
-        config.profile.active = Some(active_idx - 1);
-      }
+    if let Some(active_idx) = config.profile.active
+      && active_idx > index
+    {
+      config.profile.active = Some(active_idx - 1);
     }
   }
 
