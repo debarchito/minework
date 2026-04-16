@@ -6,7 +6,6 @@
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
-    systems.url = "github:nix-systems/default";
     crane.url = "github:ipetkov/crane";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -21,7 +20,6 @@
     inputs@{
       nixpkgs,
       flake-parts,
-      systems,
       crane,
       rust-overlay,
       advisory-db,
@@ -32,7 +30,10 @@
         flake-parts.flakeModules.easyOverlay
       ];
 
-      systems = import systems;
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
       perSystem =
         { system, config, ... }:
@@ -114,6 +115,7 @@
           };
 
           devShells.default = craneLib.devShell {
+            name = "minework-dev";
             checks = config.checks;
           };
         };
