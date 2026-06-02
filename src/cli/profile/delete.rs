@@ -74,12 +74,12 @@ fn delete_profiles(mut config: Config, profile_names: &[String], args: &crate::A
     if is_active {
       format!(
         "Are you sure you want to delete the active profile {}? This action cannot be undone.",
-        &profile.name.clone().cyan()
+        profile.name.clone().cyan()
       )
     } else {
       format!(
         "Are you sure you want to delete profile {}? This action cannot be undone.",
-        &profile.name.clone().cyan()
+        profile.name.clone().cyan()
       )
     }
   } else {

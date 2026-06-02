@@ -71,7 +71,7 @@ pub fn init(name: Option<&String>, picker: bool, config: Config, args: &crate::A
     .add_row(vec![
       Cell::new("Profile name").fg(Color::Blue),
       if is_active {
-        Cell::new(format!("{} (active ✓)", &profile.name))
+        Cell::new(format!("{} (active ✓)", profile.name))
           .fg(Color::Green)
           .add_attribute(Attribute::Italic)
       } else {
