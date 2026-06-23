@@ -11,17 +11,16 @@
 > above; it's comparable to mold when it comes to speed and parallelization.
 
 ```fish
-nix build git+https://codeberg.org/debarchito/minework#minework
+nix build git+https://git.sr.ht/~debarchito/minework#minework
 ./result/bin/minework --help
 # or
-nix run git+https://codeberg.org/debarchito/minework#minework -- --help
+nix run git+https://git.sr.ht/~debarchito/minework#minework -- --help
 ```
 
 Alternatively, if you don't want to utilize [Nix](https://nixos.org):
 
 ```fish
-git clone ssh://git@codeberg.org/debarchito/minework.git
-# or use HTTPS instead of SSH: https://codeberg.org/debarchito/minework.git
+git clone https://git.sr.ht/~debarchito/minework
 cd minework && cargo build --release
 ./target/release/minework --help
 ```
@@ -31,7 +30,7 @@ To install `minework` on NixOS/through Nix, you can make use of flakes:
 ```nix
 # flake.nix
 minework = {
-  url = "git+https://codeberg.org/debarchito/minework";
+  url = "git+https://git.sr.ht/~debarchito/minework";
   inputs.nixpkgs.follows = "nixpkgs"; # Optional
 };
 
@@ -62,7 +61,7 @@ environment.systemPackages = [
 Alternatively, you can use `cargo` to install `minework`:
 
 ```fish
-cargo install --git https://codeberg.org/debarchito/minework
+cargo install --git https://git.sr.ht/~debarchito/minework
 ```
 
 ### 2. Development
