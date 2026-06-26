@@ -11,10 +11,10 @@
 > above; it's comparable to mold when it comes to speed and parallelization.
 
 ```fish
-nix build git+https://git.sr.ht/~debarchito/minework#minework
+nix build sourcehut:~debarchito/minework#default
 ./result/bin/minework --help
 # or
-nix run git+https://git.sr.ht/~debarchito/minework#minework -- --help
+nix run sourcehut:~debarchito/minework#default -- --help
 ```
 
 Alternatively, if you don't want to utilize [Nix](https://nixos.org):
@@ -29,19 +29,17 @@ To install `minework` on NixOS/through Nix, you can make use of flakes:
 
 ```nix
 # flake.nix
-minework = {
-  url = "git+https://git.sr.ht/~debarchito/minework";
-  inputs.nixpkgs.follows = "nixpkgs"; # Optional
+inputs.minework = {
+  url = "sourcehut:~debarchito/minework";
+  inputs.nixpkgs.follows = "nixpkgs";
 };
 
-# Using the overlay
-pkgs = import nixpkgs {
-  overlays = [
-    # ...
-    minework.overlays.default
-    # ...
-  ];
-};
+# Use the overlay
+nixpkgs.overlays = [
+  # ...
+  minework.overlays.default
+  # ...
+];
 
 environment.systemPackages = [
   # ...
@@ -52,8 +50,8 @@ environment.systemPackages = [
 # or, consume the package directly
 environment.systemPackages = [
   # ...
-  minework.packages.${system}.default
-  # e.g. minework.packages.x86_64-linux.default
+  inputs.minework.packages.${system}.default
+  # e.g. inputs.minework.packages.x86_64-linux.default
   # ...
 ];
 ```
